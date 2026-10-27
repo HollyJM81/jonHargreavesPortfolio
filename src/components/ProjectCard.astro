@@ -1,0 +1,143 @@
+---
+import { Picture } from "astro:assets"
+import { displayDate, pad, projectUrl, type Project } from "../lib/projects"
+
+interface Props {
+  project: Project
+  number: number
+}
+
+const { project, number } = Astro.props
+const { title, credit, summary, roles, image, imageAlt } = project.data
+const searchText = [title, credit, summary, roles.join(" "), project.body]
+  .join(" ")
+  .toLowerCase()
+---
+
+<li class="card" data-roles={roles.join("|")} data-search={searchText}>
+  <div class="image">
+    <Picture
+      src={image}
+      alt={imageAlt}
+      widths={[400, 700, 1000]}
+      sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 33vw"
+      formats={["avif"]}
+      fallbackFormat="webp"
+    />
+    <span aria-hidden="true">{pad(number)}</span>
+  </div>
+  <div class="meta label">
+    <span>{displayDate(project)}</span>
+    <span>{credit}</span>
+  </div>
+  <h3><a href={projectUrl(project)}>{title}</a></h3>
+  {summary && <p>{summary}</p>}
+  {
+    roles.length > 0 && (
+      <ul class="roles label" aria-label="Roles">
+        {roles.map((role) => <li>{role}</li>)}
+      </ul>
+    )
+  }
+</li>
+
+<style>
+  .card {
+    position: relative;
+    grid-column: span 4;
+  }
+
+  .image {
+    position: relative;
+    aspect-ratio: 1;
+    overflow: hidden;
+    background: var(--placeholder);
+  }
+
+  .image :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(0.35) saturate(0.6);
+    transition:
+      transform 500ms ease,
+      filter 300ms ease;
+  }
+
+  .card:hover .image :global(img),
+  .card:focus-within .image :global(img) {
+    filter: grayscale(0) saturate(0.85);
+    transform: scale(1.015);
+  }
+
+  .image span {
+    position: absolute;
+    top: 13px;
+    left: 15px;
+    color: white;
+    font-family: var(--serif);
+    font-size: 15px;
+    text-shadow: 0 1px 8px rgb(0 0 0 / 0.3);
+  }
+
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 13px 0 11px;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+  }
+
+  .meta span:last-child {
+    text-align: right;
+  }
+
+  h3 {
+    margin: 20px 0 10px;
+    font-family: var(--serif);
+    font-size: clamp(32px, 3vw, 48px);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  /* The title link covers the whole card. */
+  h3 a::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+  }
+
+  p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: var(--text-small);
+  }
+
+  .roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin: 18px 0 0;
+    padding: 0;
+    color: var(--muted);
+    list-style: none;
+  }
+
+  @media (max-width: 900px) {
+    .card {
+      grid-column: span 6;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .card {
+      grid-column: 1 / -1;
+    }
+
+    h3 {
+      font-size: 39px;
+    }
+  }
+</style>

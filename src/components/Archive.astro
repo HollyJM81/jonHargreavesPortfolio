@@ -1,0 +1,207 @@
+---
+import { render } from "astro:content"
+import { displayDate, pad, projectUrl, type Project } from "../lib/projects"
+
+interface Props {
+  projects: Project[]
+  startAt: number
+}
+
+const { projects, startAt } = Astro.props
+
+// Render bodies up front for rows using the simplified expanding layout.
+const rows = await Promise.all(
+  projects.map(async (project, i) => ({
+    project,
+    number: startAt + i,
+    Content: project.data.display === "expand" ? (await render(project)).Content : null,
+  })),
+)
+---
+
+<details class="archive" id="archive">
+  <summary>
+    <span class="closed-text">View the archive</span>
+    <span class="open-text">Close the archive</span>
+    <span class="count label">{projects.length} projects</span>
+    <span class="icon" aria-hidden="true"></span>
+  </summary>
+
+  <ol>
+    {
+      rows.map(({ project, number, Content }) =>
+        Content ? (
+          <li>
+            <details class="expand">
+              <summary class="row">
+                <span class="label">{pad(number)}</span>
+                <strong>{project.data.title}</strong>
+                <span class="label credit">{project.data.credit}</span>
+                <span class="label">{displayDate(project)}</span>
+              </summary>
+              <div class="expand-body prose">
+                {project.data.summary && <p class="summary">{project.data.summary}</p>}
+                <Content />
+                <a class="label more" href={projectUrl(project)}>
+                  Full project page →
+                </a>
+              </div>
+            </details>
+          </li>
+        ) : (
+          <li>
+            <a class="row" href={projectUrl(project)}>
+              <span class="label">{pad(number)}</span>
+              <strong>{project.data.title}</strong>
+              <span class="label credit">{project.data.credit}</span>
+              <span class="label">{displayDate(project)}</span>
+            </a>
+          </li>
+        ),
+      )
+    }
+  </ol>
+</details>
+
+<script>
+  // Open the archive when something links to it (e.g. the empty-state link).
+  const archive = document.querySelector<HTMLDetailsElement>("#archive")!
+  const openIfTargeted = () => {
+    if (location.hash === "#archive") archive.open = true
+  }
+  addEventListener("hashchange", openIfTargeted)
+  openIfTargeted()
+</script>
+
+<style>
+  .archive {
+    margin-top: var(--section-space);
+  }
+
+  .archive > summary {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 26px 0;
+    cursor: pointer;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    font-family: var(--serif);
+    font-size: clamp(34px, 4vw, 54px);
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .count {
+    margin-left: auto;
+    color: var(--muted);
+    font-family: var(--sans);
+  }
+
+  .icon::before {
+    font-family: var(--sans);
+    font-size: 28px;
+    font-weight: 300;
+    content: "+";
+  }
+
+  .archive[open] > summary .icon::before {
+    content: "−";
+  }
+
+  .open-text,
+  .archive[open] > summary .closed-text {
+    display: none;
+  }
+
+  .archive[open] > summary .open-text {
+    display: inline;
+  }
+
+  .archive[open] ol {
+    animation: reveal 280ms ease both;
+  }
+
+  @keyframes reveal {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+  }
+
+  ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: 60px 1fr minmax(150px, 0.6fr) 70px;
+    gap: 20px;
+    align-items: baseline;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    transition: color var(--ease);
+  }
+
+  .row strong {
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 400;
+  }
+
+  a.row:hover strong,
+  summary.row:hover strong {
+    color: var(--blue);
+  }
+
+  summary.row {
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .expand-body {
+    padding: 24px 0 32px 80px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .summary {
+    font-family: var(--serif);
+    font-size: 20px;
+  }
+
+  .more {
+    display: inline-block;
+    margin-top: 8px;
+    border-bottom: 1px solid currentColor;
+  }
+
+  @media (max-width: 620px) {
+    .archive {
+      margin-top: 50px;
+    }
+
+    .count {
+      display: none;
+    }
+
+    .row {
+      grid-template-columns: 35px 1fr auto;
+      gap: 10px;
+    }
+
+    .row .credit {
+      display: none;
+    }
+
+    .expand-body {
+      padding-left: 45px;
+    }
+  }
+</style>

@@ -1,0 +1,70 @@
+---
+import { site } from "../data/site"
+---
+
+<footer id="contact" class="on-dark">
+  <div class="call">
+    <span class="label">(03) Make contact</span>
+    <h2 class="display">Have a project?</h2>
+    <a href={`mailto:${site.email}`}>write to me <span aria-hidden="true">↗</span></a>
+  </div>
+  <div class="bottom label">
+    <span>{site.name} / Music</span>
+    <span class="location">{site.location}</span>
+    <a href="#main">Back to top ↑</a>
+  </div>
+</footer>
+
+<style>
+  footer {
+    padding: 115px var(--gutter) 24px;
+    background: var(--blue);
+    color: var(--paper);
+  }
+
+  h2 {
+    margin: 18px 0 76px;
+    font-size: clamp(66px, 11vw, 162px);
+  }
+
+  .call > a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 27px 0;
+    border-top: 1px solid rgb(242 240 233 / 0.5);
+    border-bottom: 1px solid rgb(242 240 233 / 0.5);
+    font-family: var(--serif);
+    font-size: clamp(24px, 4vw, 60px);
+  }
+
+  .call > a span {
+    font-family: var(--sans);
+    font-size: 24px;
+  }
+
+  .bottom {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding-top: 85px;
+  }
+
+  @media (max-width: 620px) {
+    footer {
+      padding-top: 85px;
+    }
+
+    h2 {
+      margin-bottom: 55px;
+    }
+
+    .bottom {
+      padding-top: 65px;
+    }
+
+    .location {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,382 @@
+---
+import { Picture } from "astro:assets"
+import { render } from "astro:content"
+import Base from "../../layouts/Base.astro"
+import { displayDate, getProjects, projectUrl, type Project } from "../../lib/projects"
+import { embedUrl } from "../../lib/embed"
+
+export async function getStaticPaths() {
+  const { all } = await getProjects()
+  return all.map((project, i) => ({
+    params: { slug: project.id },
+    props: { project, newer: all[i - 1], older: all[i + 1] },
+  }))
+}
+
+interface Props {
+  project: Project
+  newer?: Project
+  older?: Project
+}
+
+const { project, newer, older } = Astro.props
+const { title, credit, summary, roles, image, imageAlt, gallery, collaborators, website, videos, audio, press } =
+  project.data
+const { Content } = await render(project)
+const embeds = (videos ?? []).map((v) => ({ ...v, embed: embedUrl(v.url) }))
+---
+
+<Base title={title} description={summary ?? `${title}: ${credit}.`} image={image}>
+  <article class="project">
+    <a class="back label" href="/#work">← All work</a>
+
+    <header>
+      <p class="label kicker">
+        <span>{displayDate(project)}</span>
+        {roles.length > 0 && <span>{roles.join(" · ")}</span>}
+      </p>
+      <h1 class="display">{title}</h1>
+      {summary && <p class="summary">{summary}</p>}
+    </header>
+
+    <figure class="hero-image">
+      <Picture
+        src={image}
+        alt={imageAlt}
+        widths={[600, 1000, 1600]}
+        sizes="(max-width: 900px) 100vw, 66vw"
+        formats={["avif"]}
+        fallbackFormat="webp"
+        loading="eager"
+      />
+    </figure>
+
+    <div class="layout">
+      <aside class="facts">
+        <dl>
+          <div>
+            <dt class="label">Role</dt>
+            <dd>{credit}</dd>
+          </div>
+          {
+            collaborators && (
+              <div>
+                <dt class="label">With</dt>
+                <dd>
+                  <ul>
+                    {collaborators.map((c) => (
+                      <li>{c.url ? <a href={c.url}>{c.name}</a> : c.name}</li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )
+          }
+          {
+            audio && (
+              <div>
+                <dt class="label">Listen</dt>
+                <dd>
+                  <ul>
+                    {audio.map((a) => (
+                      <li>
+                        <a href={a.url}>{a.title ?? "Listen"} ↗</a>
+                      </li>
+                    ))}
+                  </ul>
+                </dd>
+              </div>
+            )
+          }
+          {
+            website && (
+              <div>
+                <dt class="label">More</dt>
+                <dd>
+                  <a href={website}>Project website ↗</a>
+                </dd>
+              </div>
+            )
+          }
+        </dl>
+      </aside>
+
+      <div class="main">
+        <div class="prose"><Content /></div>
+
+        {
+          embeds.map((v) =>
+            v.embed ? (
+              <figure class="video">
+                <iframe
+                  src={v.embed}
+                  title={v.title ?? `${title} video`}
+                  loading="lazy"
+                  allow="encrypted-media; fullscreen; picture-in-picture"
+                  allowfullscreen
+                />
+                {v.title && <figcaption class="label">{v.title}</figcaption>}
+              </figure>
+            ) : (
+              <p>
+                <a class="label link" href={v.url}>
+                  {v.title ?? "Watch"} ↗
+                </a>
+              </p>
+            ),
+          )
+        }
+
+        {
+          press && (
+            <section class="press" aria-label="Press">
+              {press.map((p) => (
+                <figure>
+                  <blockquote>“{p.quote}”</blockquote>
+                  {p.source && <figcaption class="label">{p.source}</figcaption>}
+                </figure>
+              ))}
+            </section>
+          )
+        }
+
+        {
+          gallery && (
+            <ul class="gallery">
+              {gallery.map((g) => (
+                <li>
+                  <Picture
+                    src={g.src}
+                    alt={g.alt}
+                    widths={[500, 900]}
+                    sizes="(max-width: 620px) 100vw, 33vw"
+                    formats={["avif"]}
+                    fallbackFormat="webp"
+                  />
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+    </div>
+
+    <nav class="pager" aria-label="More projects">
+      {
+        newer && (
+          <a href={projectUrl(newer)}>
+            <span class="label">← Newer</span>
+            {newer.data.title}
+          </a>
+        )
+      }
+      {
+        older && (
+          <a class="older" href={projectUrl(older)}>
+            <span class="label">Older →</span>
+            {older.data.title}
+          </a>
+        )
+      }
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .project {
+    padding: 48px var(--gutter) var(--section-space);
+  }
+
+  .back {
+    display: inline-block;
+    color: var(--muted);
+    border-bottom: 1px solid transparent;
+  }
+
+  .back:hover {
+    border-color: currentColor;
+  }
+
+  header {
+    max-width: 1100px;
+    margin: 64px 0 56px;
+  }
+
+  .kicker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin: 0 0 24px;
+    color: var(--muted);
+  }
+
+  h1 {
+    font-size: clamp(54px, 8vw, 116px);
+  }
+
+  .summary {
+    max-width: var(--max-measure);
+    margin: 28px 0 0;
+    font-family: var(--serif);
+    font-size: clamp(22px, 2.2vw, 30px);
+    line-height: 1.25;
+  }
+
+  .hero-image {
+    margin: 0 0 72px;
+  }
+
+  .hero-image :global(img) {
+    width: 100%;
+    max-height: 78vh;
+    object-fit: contain;
+    object-position: left center;
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(200px, 1fr) 2fr;
+    gap: 60px;
+    padding-top: 28px;
+    border-top: 1px solid var(--ink);
+  }
+
+  dl {
+    display: grid;
+    gap: 28px;
+    margin: 0;
+  }
+
+  dt {
+    margin-bottom: 6px;
+    color: var(--muted);
+  }
+
+  dd {
+    margin: 0;
+    font-size: var(--text-body);
+  }
+
+  dd ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  dd a,
+  .link {
+    border-bottom: 1px solid var(--line);
+  }
+
+  dd a:hover,
+  .link:hover {
+    border-color: currentColor;
+  }
+
+  .prose :global(p:first-child) {
+    margin-top: 0;
+  }
+
+  .video {
+    margin: 48px 0 0;
+  }
+
+  .video iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    background: var(--placeholder);
+  }
+
+  .video figcaption {
+    margin-top: 10px;
+    color: var(--muted);
+  }
+
+  .press {
+    display: grid;
+    gap: 40px;
+    margin-top: 64px;
+  }
+
+  .press figure {
+    margin: 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+
+  .press blockquote {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: clamp(22px, 2vw, 27px);
+    line-height: 1.25;
+  }
+
+  .press figcaption {
+    margin-top: 16px;
+  }
+
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 64px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .gallery :global(img) {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: var(--section-space);
+    border-top: 1px solid var(--ink);
+  }
+
+  .pager a {
+    display: grid;
+    gap: 8px;
+    padding-top: 24px;
+    font-family: var(--serif);
+    font-size: clamp(22px, 2.4vw, 34px);
+    line-height: 1.1;
+  }
+
+  .pager a:hover {
+    color: var(--blue);
+  }
+
+  .pager .label {
+    color: var(--muted);
+    font-family: var(--sans);
+  }
+
+  .older {
+    grid-column: 2;
+    text-align: right;
+  }
+
+  @media (max-width: 900px) {
+    .layout {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+
+  @media (max-width: 620px) {
+    header {
+      margin: 40px 0;
+    }
+
+    .hero-image {
+      margin-bottom: 48px;
+    }
+  }
+</style>

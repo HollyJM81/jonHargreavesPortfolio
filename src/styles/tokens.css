@@ -1,0 +1,35 @@
+:root {
+  /* Colour */
+  --ink: #20211f;
+  --ink-soft: #44443f;
+  --paper: #f2f0e9;
+  --paper-deep: #dedbd2;
+  --placeholder: #d8d6ce;
+  --blue: #263d73;
+  --muted: #6c6b65;
+  --line: #b9b6ac;
+  --line-on-dark: rgb(242 240 233 / 0.35);
+
+  /* Type */
+  --serif: var(--font-serif), Georgia, serif;
+  --sans: var(--font-sans), sans-serif;
+  --text-label: 11px;
+  --text-small: 13px;
+  --text-body: 15px;
+  --tracking-label: 0.12em;
+
+  /* Layout */
+  --gutter: 42px;
+  --section-space: 120px;
+  --max-measure: 620px;
+
+  /* Motion */
+  --ease: 160ms ease;
+}
+
+@media (max-width: 620px) {
+  :root {
+    --gutter: 16px;
+    --section-space: 85px;
+  }
+}

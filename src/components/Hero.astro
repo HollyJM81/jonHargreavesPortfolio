@@ -1,0 +1,189 @@
+---
+import { Picture } from "astro:assets"
+import headshot from "../assets/jon-headshot.jpg"
+import { site } from "../data/site"
+---
+
+<section class="hero on-dark" aria-labelledby="hero-title">
+  <div class="kicker label"><span>Est. {site.born}</span></div>
+  <div class="title">
+    <h1 id="hero-title">Jon<br />Hargreaves</h1>
+    <p class="label">
+      {
+        site.practices.map((practice, i) => (
+          <>
+            {i > 0 && <span aria-hidden="true"> · </span>}
+            {practice}
+          </>
+        ))
+      }
+    </p>
+  </div>
+  <div class="image">
+    <Picture
+      src={headshot}
+      alt="Jon Hargreaves in semi-profile"
+      widths={[600, 900, 1300]}
+      sizes="(max-width: 620px) 100vw, (max-width: 900px) 90vw, 68vw"
+      formats={["avif"]}
+      fallbackFormat="webp"
+      loading="eager"
+      fetchpriority="high"
+    />
+    <p class="credit label">Portrait by {site.portraitCredit}</p>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: grid;
+    min-height: 820px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 96px 1fr;
+    overflow: hidden;
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .kicker {
+    z-index: 4;
+    display: flex;
+    width: min(100%, 850px);
+    align-items: end;
+    padding: 0 var(--gutter) 16px;
+    border-bottom: 1px solid var(--line-on-dark);
+  }
+
+  .title {
+    z-index: 4;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 46px var(--gutter);
+  }
+
+  h1 {
+    max-width: 850px;
+    margin: 0 0 48px;
+    font-family: var(--serif);
+    font-size: clamp(104px, 12vw, 182px);
+    font-weight: 400;
+    line-height: 0.78;
+    letter-spacing: -0.06em;
+  }
+
+  .title p {
+    margin: 0;
+    line-height: 1.8;
+  }
+
+  .image {
+    position: absolute;
+    z-index: 1;
+    inset: 0;
+    overflow: hidden;
+    background: #000;
+  }
+
+  .image::after {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(
+        90deg,
+        var(--ink) 20%,
+        color-mix(in srgb, var(--ink) 94%, transparent) 38%,
+        color-mix(in srgb, var(--ink) 80%, transparent) 56%,
+        color-mix(in srgb, var(--ink) 10%, transparent) 78%
+      ),
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--ink) 65%, transparent),
+        transparent 28%,
+        transparent 60%,
+        color-mix(in srgb, var(--ink) 85%, transparent)
+      );
+    content: "";
+    pointer-events: none;
+  }
+
+  .image :global(img) {
+    position: absolute;
+    right: 0;
+    width: 68%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 32%;
+    filter: grayscale(1);
+    mask-image: linear-gradient(90deg, transparent, #000 18%);
+  }
+
+  .credit {
+    position: absolute;
+    z-index: 4;
+    right: 28px;
+    bottom: 28px;
+    margin: 0;
+    font-size: 10px;
+    writing-mode: vertical-rl;
+  }
+
+  @media (max-width: 900px) {
+    .hero {
+      grid-template-rows: 76px 1fr;
+    }
+
+    .image :global(img) {
+      width: 90%;
+      object-position: 55% center;
+    }
+
+    .image::after {
+      background:
+        linear-gradient(
+          90deg,
+          color-mix(in srgb, var(--ink) 98%, transparent),
+          color-mix(in srgb, var(--ink) 85%, transparent) 35%,
+          color-mix(in srgb, var(--ink) 70%, transparent) 65%,
+          color-mix(in srgb, var(--ink) 55%, transparent)
+        ),
+        linear-gradient(
+          180deg,
+          color-mix(in srgb, var(--ink) 60%, transparent),
+          transparent 25%,
+          transparent 55%,
+          color-mix(in srgb, var(--ink) 90%, transparent)
+        );
+    }
+
+    h1 {
+      font-size: clamp(90px, 19vw, 160px);
+    }
+  }
+
+  @media (max-width: 620px) {
+    .hero {
+      min-height: 750px;
+    }
+
+    .kicker {
+      padding-bottom: 12px;
+    }
+
+    .title {
+      padding-block: 30px;
+    }
+
+    h1 {
+      margin-bottom: 52px;
+      /* "Hargreaves" is ~4.3em wide; 21vw keeps it inside a 16px gutter. */
+      font-size: clamp(60px, 21vw, 118px);
+    }
+
+    .image :global(img) {
+      width: 100%;
+      object-position: 58% center;
+    }
+  }
+</style>

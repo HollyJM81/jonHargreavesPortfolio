@@ -1,0 +1,143 @@
+---
+// Bio text matches the current live site (Webflow homepage).
+---
+
+<section class="profile" id="about" aria-labelledby="profile-title">
+  <div>
+    <span class="label">(02) Profile</span>
+    <h2 class="display" id="profile-title">
+      Serious about music.<br />
+      <em>Relentless</em> in the pursuit of meaning.
+    </h2>
+  </div>
+  <div class="copy">
+    <p class="lead">
+      Jon works across musical genres as a composer, arranger and conductor, from his base in
+      Scotland.
+    </p>
+    <div class="columns">
+      <p>
+        His professional portfolio over the last 10 years encompasses artistic directorships;
+        conducting new music, as well as standard orchestral repertoire and opera;
+        composing/arranging for orchestras, singer-songwriters and other artists; and executive
+        production for recording projects.
+      </p>
+      <p>
+        He co-founded the Octandre Ensemble with the composer Christian Mason in 2011. He has
+        conducted and led the Ensemble in festival appearances in London and at the Huddersfield
+        Contemporary Music Festival, leading to appearances on BBC Radio 3, and CD releases on
+        Another Timbre and SN Variations. He was founding Co-Artistic Director of Glasgow's Nevis
+        Ensemble until 2022, conducting over 200 performances in settings ranging from schools and
+        prisons to museums, art galleries and concert halls, as well as on top of Ben Nevis and on
+        the remote isles of St Kilda. Since 2023, he conducts the Film Composers Lab at the Royal
+        Scottish National Orchestra (RSNO).
+      </p>
+      <p>
+        Jon has a long-term and deep-rooted interest in musical value and meaning. He has published
+        music analytic work, as well as collaborations in the social psychology of music, music
+        education and embodied music cognition. Jon teaches at the Royal Conservatoire of Scotland.
+      </p>
+    </div>
+    <figure>
+      <blockquote>
+        “Denyer’s hour-long masterpiece … had a gripping flow that was sometimes thunderously
+        aggressive, … sometimes beguiling and often disturbing.”
+      </blockquote>
+      <figcaption class="label">
+        Richard Morrison, The Times —
+        <a href="/projects/the-fish-that-became-the-sun-world-premiere">
+          The Fish that Became the Sun
+        </a>
+      </figcaption>
+    </figure>
+  </div>
+</section>
+
+<style>
+  .profile {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9vw;
+    margin-top: 130px;
+    padding: var(--section-space) var(--gutter) 130px;
+    border-top: 1px solid var(--line);
+    background: var(--paper-deep);
+  }
+
+  h2 {
+    max-width: 800px;
+    margin-top: 18px;
+    font-size: clamp(55px, 7vw, 100px);
+  }
+
+  h2 em {
+    color: var(--blue);
+  }
+
+  .copy {
+    padding-top: 38px;
+  }
+
+  .lead {
+    max-width: 580px;
+    margin: 0 0 48px;
+    font-family: var(--serif);
+    font-size: clamp(30px, 3vw, 44px);
+    line-height: 1.1;
+  }
+
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+
+  .columns p {
+    margin: 0;
+    font-size: var(--text-small);
+    line-height: 1.7;
+  }
+
+  figure {
+    margin: 70px 0 0;
+    padding: 28px 0 0;
+    border-top: 1px solid var(--ink);
+  }
+
+  blockquote {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: 27px;
+    line-height: 1.2;
+  }
+
+  figcaption {
+    margin-top: 22px;
+  }
+
+  figcaption a {
+    border-bottom: 1px solid currentColor;
+  }
+
+  @media (max-width: 900px) {
+    .profile {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+
+    .copy {
+      padding-top: 0;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .profile {
+      margin-top: 85px;
+      padding-bottom: var(--section-space);
+    }
+
+    .columns {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

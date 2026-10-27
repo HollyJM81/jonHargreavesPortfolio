@@ -1,0 +1,27 @@
+---
+import Base from "../layouts/Base.astro"
+import Hero from "../components/Hero.astro"
+import WorkIndex from "../components/WorkIndex.astro"
+import Profile from "../components/Profile.astro"
+import { getProjects } from "../lib/projects"
+import { site } from "../data/site"
+
+const { featured, archive } = await getProjects()
+
+const person = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: site.name,
+  url: Astro.site?.href,
+  email: `mailto:${site.email}`,
+  jobTitle: site.practices.join(", "),
+  birthDate: String(site.born),
+  homeLocation: site.location,
+}
+---
+
+<Base header="overlay" jsonLd={person}>
+  <Hero />
+  <WorkIndex featured={featured} archive={archive} />
+  <Profile />
+</Base>

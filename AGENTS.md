@@ -1,41 +1,36 @@
-# figma-make-app
+# Jon Hargreaves — website
 
-React + Vite + Tailwind CSS project running inside Figma Make.
+Static Astro site for www.jonhargreaves.net, deployed to GitHub Pages.
 
-## Development Server
+## Commands
 
-A Vite development server is **already running** on `$PORT` (default 8443). You don't need to start it manually.
+Requires the Node version in `.nvmrc` (`nvm use`). Package manager is npm.
 
-- Preview URL: The user can access the running app through the preview panel
-- Hot reload: Changes to source files are reflected immediately
+- `npm run dev` — dev server at http://localhost:4321
+- `npm run build` — type check (`astro check`) then build to `dist/`
+- `npm run preview` — serve the built site
 
-## Project Structure
+## Structure
 
-This is the canonical project structure. Start with task-relevant files below. Only follow imports or inspect other files when required, when a documented path is missing, or when the repository contradicts this guide.
+- `src/content/projects/*.md` — one file per project. The filename is the URL slug (`/projects/<slug>`); these slugs match the old Webflow site, so don't rename them without adding a redirect.
+- `src/content.config.ts` — the project schema. The build fails on bad frontmatter.
+- `src/data/roles.ts` — the filterable practice areas. `src/data/site.ts` — name, email, location.
+- `src/assets/projects/<slug>/` — project images; Astro produces AVIF/WebP at build time. Keep sources at most 2400px on the long edge, saved as JPEG unless they need transparency.
+- `src/pages/` — `index.astro`, `projects/[slug].astro`, `404.astro`.
+- `src/components/` — one component per homepage section; styles are scoped inside each.
+- `src/styles/tokens.css` — colour, type and spacing tokens. `base.css` — reset and shared classes (`.label`, `.display`, `.prose`).
+- `public/CNAME` — the custom domain for GitHub Pages.
 
-- `src/main.tsx` - React entrypoint; imports `src/index.css` and mounts `src/App.tsx` into the `#root` element
-- `src/App.tsx` - Primary application component and the usual starting point for UI work
-- `src/index.css` - Global CSS entrypoint and Tailwind CSS v4 import
-- `index.html` - Vite HTML shell containing the `#root` element and loading `src/main.tsx`
-- `package.json` - Project dependencies and the Vite build, development, preview, and formatting scripts
-- `vite.config.ts` - Vite configuration with React, Tailwind CSS v4, and Figma Make plugins plus the `@` alias for `src`
-- `.mise.toml` - Toolchain versions for Node.js and pnpm
+## Projects
 
-## Dependencies
+- `featured: true` puts a project in the main grid, chosen by importance, not date. Everything else goes to the archive. Both are sorted newest first by `date` (`YYYY`, `YYYY-MM` or `YYYY-MM-DD`).
+- `display: "expand"` shows an archive item as an expanding row instead of a link (it still gets a page).
+- `roles` must come from `src/data/roles.ts`. `credit` is Jon's role in his own words.
+- Body text was imported from the Webflow CMS in the first person; the homepage bio is in the third person.
 
-- Runtime: React 19 and React DOM 19
-- Styling: Tailwind CSS v4 with the `@tailwindcss/vite` plugin
-- Build tooling: Vite 8, TypeScript 5.7, and `@vitejs/plugin-react`
-- Formatting: oxfmt
+## Conventions
 
-## Styling
-
-This project uses **Tailwind CSS v4** through the `@tailwindcss/vite` plugin configured in `vite.config.ts`. `src/index.css` imports Tailwind with `@import 'tailwindcss';`. Use Tailwind utility classes directly in JSX and put global CSS or Tailwind v4 theme customization in `src/index.css`. This scaffold does not need a Tailwind config file or PostCSS config.
-
-`src/main.tsx` imports `src/index.css`, so global font wiring belongs in `src/index.css`. Keep CSS `@import` statements first, then add any `@font-face` rules and font-family defaults there.
-
-## Code quality
-
-- Use double quotes for strings containing apostrophes (`"We're here to help"`), or escape them in single-quoted strings. An unescaped apostrophe in a single-quoted string breaks the build.
-- Ensure JSX tags are closed and braces are balanced.
-- Export components as default exports.
+- Plain CSS with tokens; no Tailwind. Scoped `<style>` in components, `:global()` only for child elements such as `<img>` in `<Picture>`.
+- Use `<Picture>` from `astro:assets` with `formats={["avif"]}` and `fallbackFormat="webp"`, never the source format (PNG fallbacks made the output roughly 3× larger).
+- Interactive behaviour is plain `<script>` on static HTML and must degrade without JavaScript (see the filter in `WorkIndex.astro`).
+- Build output uses `build.format: "file"` so `/projects/<slug>` is served without a trailing-slash redirect.

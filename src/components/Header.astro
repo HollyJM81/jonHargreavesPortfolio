@@ -1,0 +1,154 @@
+---
+import { site } from "../data/site"
+
+interface Props {
+  variant: "overlay" | "solid"
+}
+
+const { variant } = Astro.props
+const links = [
+  { href: "/#work", label: "Work" },
+  { href: "/#about", label: "Profile" },
+  { href: "/#contact", label: "Contact" },
+]
+---
+
+<header class:list={["site-header", variant, { "on-dark": variant === "overlay" }]}>
+  <a class="wordmark" href="/" aria-label={`${site.name}, home`}>JH<span>/</span></a>
+
+  <nav aria-label="Primary">
+    <ul>
+      {links.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+    </ul>
+  </nav>
+
+  <a class="enquiries" href={`mailto:${site.email}`}>Enquiries</a>
+
+  <details class="mobile-nav">
+    <summary class="label">Menu</summary>
+    <ul>
+      {links.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+      <li><a href={`mailto:${site.email}`}>Enquiries</a></li>
+    </ul>
+  </details>
+</header>
+
+<style>
+  .site-header {
+    z-index: 20;
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 28px var(--gutter);
+    font-size: var(--text-label);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: var(--paper);
+  }
+
+  .solid {
+    position: relative;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .wordmark {
+    font-family: var(--serif);
+    font-size: 25px;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    text-transform: none;
+  }
+
+  .wordmark span {
+    font-weight: 400;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  nav ul {
+    display: flex;
+    gap: 36px;
+  }
+
+  nav a,
+  .enquiries {
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--ease);
+  }
+
+  nav a:hover,
+  .enquiries:hover {
+    border-color: currentColor;
+  }
+
+  .enquiries {
+    justify-self: end;
+  }
+
+  .mobile-nav {
+    display: none;
+  }
+
+  @media (max-width: 900px) {
+    .site-header {
+      grid-template-columns: 1fr auto;
+      padding: 22px var(--gutter);
+    }
+
+    nav,
+    .enquiries {
+      display: none;
+    }
+
+    .mobile-nav {
+      display: block;
+      justify-self: end;
+    }
+
+    .mobile-nav summary {
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .mobile-nav summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .mobile-nav[open] summary {
+      position: relative;
+      z-index: 2;
+    }
+
+    .mobile-nav ul {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      right: 0;
+      left: 0;
+      display: grid;
+      gap: 18px;
+      padding: 72px var(--gutter) 32px;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: var(--serif);
+      font-size: 34px;
+      letter-spacing: -0.02em;
+      text-transform: none;
+    }
+
+    .solid .mobile-nav[open] summary {
+      color: var(--paper);
+    }
+  }
+</style>

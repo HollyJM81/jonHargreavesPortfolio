@@ -1,0 +1,27 @@
+---
+import Base from "../layouts/Base.astro"
+---
+
+<Base title="Page not found">
+  <section>
+    <span class="label">404</span>
+    <h1 class="display">This page has moved or no longer exists.</h1>
+    <a class="label" href="/#work">Browse the work →</a>
+  </section>
+</Base>
+
+<style>
+  section {
+    padding: var(--section-space) var(--gutter);
+  }
+
+  h1 {
+    max-width: 900px;
+    margin: 18px 0 48px;
+    font-size: clamp(48px, 7vw, 96px);
+  }
+
+  a {
+    border-bottom: 1px solid currentColor;
+  }
+</style>
