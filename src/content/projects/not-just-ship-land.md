@@ -2,7 +2,6 @@
 title: "Not Just Ship Land"
 date: "2021-08"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Musical director and conductor, keyboards, orchestral manager, score and parts production"

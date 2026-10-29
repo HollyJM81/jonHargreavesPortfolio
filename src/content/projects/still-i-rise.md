@@ -2,7 +2,6 @@
 title: "Still I Rise"
 date: "2024-01"
 featured: false
-display: "page"
 roles: []
 credit: "Writer, presenter"
 summary: "Writing and presenting two short education films for the Royal Scottish National Orchestra"

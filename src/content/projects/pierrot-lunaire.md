@@ -2,7 +2,6 @@
 title: "Pierrot Lunaire"
 date: "2023-11-17"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Conductor"

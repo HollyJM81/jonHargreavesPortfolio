@@ -1,15 +1,26 @@
 ---
 import { site } from "../data/site"
+import siteBuilderLogo from "../assets/Scordatura_Logo_White.svg"
 ---
 
 <footer id="contact" class="on-dark">
   <div class="call">
-    <span class="label">(03) Make contact</span>
+    <span class="label">(03) Enquiries</span>
     <h2 class="display">Have a project?</h2>
-    <a href={`mailto:${site.email}`}>write to me <span aria-hidden="true">↗</span></a>
+    <a href={`mailto:${site.email}`}>
+      Send me a message
+      <span class="arrow" aria-hidden="true">↗</span>
+    </a>
   </div>
   <div class="bottom label">
-    <span>{site.name} / Music</span>
+    <a class="builder" href={site.siteBuilderUrl}>
+      <img
+        src={siteBuilderLogo.src}
+        width={siteBuilderLogo.width}
+        height={siteBuilderLogo.height}
+        alt={`Site by ${site.siteBuilder}`}
+      />
+    </a>
     <span class="location">{site.location}</span>
     <a href="#main">Back to top ↑</a>
   </div>
@@ -36,18 +47,41 @@ import { site } from "../data/site"
     border-bottom: 1px solid rgb(242 240 233 / 0.5);
     font-family: var(--serif);
     font-size: clamp(24px, 4vw, 60px);
+    overflow-wrap: anywhere;
+    transition: padding var(--ease);
+  }
+
+  .call > a:hover {
+    padding-inline: 12px;
   }
 
   .call > a span {
     font-family: var(--sans);
     font-size: 24px;
+    transition: transform var(--ease);
+  }
+
+  .call > a:hover span {
+    transform: translate(4px, -4px);
   }
 
   .bottom {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     gap: 20px;
     padding-top: 85px;
+  }
+
+  .builder img {
+    width: auto;
+    height: 22px;
+    opacity: 0.85;
+    transition: opacity var(--ease);
+  }
+
+  .builder:hover img {
+    opacity: 1;
   }
 
   @media (max-width: 620px) {

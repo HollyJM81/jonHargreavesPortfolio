@@ -2,7 +2,6 @@
 title: "The Sad Club"
 date: "2024-06"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Supporting Musical Director"

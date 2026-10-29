@@ -2,7 +2,6 @@
 title: "Sub"
 date: "2021"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Conductor"

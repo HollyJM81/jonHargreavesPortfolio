@@ -3,7 +3,6 @@ title: "Online Orchestra"
 date: "2015-07"
 dateLabel: "2014–15"
 featured: false
-display: "page"
 roles:
   - "Conductor"
   - "Researcher"

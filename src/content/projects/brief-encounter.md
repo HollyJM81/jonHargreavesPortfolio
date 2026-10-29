@@ -2,7 +2,6 @@
 title: "Brief Encounter"
 date: "2014"
 featured: false
-display: "page"
 roles: []
 credit: "Editor (score and parts production)"
 summary: "Live film score production"

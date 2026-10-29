@@ -1,0 +1,65 @@
+---
+import Base from "../layouts/Base.astro"
+import RecordingGrid from "../components/RecordingGrid.astro"
+import { getProjects } from "../lib/projects"
+import { site } from "../data/site"
+
+const { recordings } = await getProjects()
+---
+
+<Base
+  title="Discography"
+  description={`Recordings by ${site.name}: albums, EPs and singles as conductor, arranger, composer and producer.`}
+>
+  <div class="page">
+    <a class="back label" href="/">← Home</a>
+
+    <header>
+      <p class="label kicker">Discography · {recordings.length} recordings</p>
+      <h1 class="display">Recordings</h1>
+      <p class="summary">
+        Albums, EPs and singles from two decades of conducting, arranging, composing and producing.
+      </p>
+    </header>
+
+    <RecordingGrid recordings={recordings} />
+  </div>
+</Base>
+
+<style>
+  .page {
+    padding: 48px var(--gutter) var(--section-space);
+  }
+
+  .back {
+    display: inline-block;
+    color: var(--muted);
+    border-bottom: 1px solid transparent;
+  }
+
+  .back:hover {
+    border-color: currentColor;
+  }
+
+  header {
+    max-width: 1100px;
+    margin: 64px 0 72px;
+  }
+
+  .kicker {
+    margin: 0 0 24px;
+    color: var(--muted);
+  }
+
+  h1 {
+    font-size: clamp(54px, 8vw, 116px);
+  }
+
+  .summary {
+    max-width: var(--max-measure);
+    margin: 28px 0 0;
+    font-family: var(--serif);
+    font-size: clamp(22px, 2.2vw, 30px);
+    line-height: 1.25;
+  }
+</style>

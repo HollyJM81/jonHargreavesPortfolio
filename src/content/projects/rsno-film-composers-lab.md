@@ -3,7 +3,6 @@ title: "RSNO Film Composers Lab"
 date: "2023"
 dateLabel: "2023/24"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Conductor, selection panel"

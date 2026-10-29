@@ -12,7 +12,7 @@ export async function getProjects() {
   return {
     all,
     featured: all.filter((p) => p.data.featured),
-    archive: all.filter((p) => !p.data.featured),
+    recordings: all.filter((p) => p.data.recording),
   }
 }
 

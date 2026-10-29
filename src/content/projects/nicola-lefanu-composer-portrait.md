@@ -2,7 +2,6 @@
 title: "Nicola LeFanu Composer Portrait"
 date: "2018-03"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Co-Artistic Director, Conductor, Fundraiser"

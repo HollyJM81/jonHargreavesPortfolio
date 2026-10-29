@@ -2,7 +2,6 @@
 title: "Parallel Worlds and Portals"
 date: "2026-01"
 featured: true
-display: "page"
 roles:
   - "Composer"
   - "Arranger"

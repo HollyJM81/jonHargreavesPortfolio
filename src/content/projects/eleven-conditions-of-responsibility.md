@@ -2,7 +2,7 @@
 title: "Eleven Conditions of Responsibility"
 date: "2025-06"
 featured: true
-display: "page"
+recording: true
 roles:
   - "Conductor"
 credit: "Conductor"

@@ -3,7 +3,6 @@ title: "RSNO Film Composer Lab"
 date: "2023"
 dateLabel: "2022/23"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Conducted the orchestral workshops."

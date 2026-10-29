@@ -2,7 +2,6 @@
 title: "Sonorities and Spectra"
 date: "2024"
 featured: false
-display: "page"
 roles:
   - "Researcher"
 credit: "Co-author"

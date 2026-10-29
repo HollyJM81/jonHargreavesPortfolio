@@ -3,7 +3,7 @@ title: "The Shipwrecker’s Lantern"
 date: "2022"
 dateLabel: "2020–22"
 featured: false
-display: "page"
+recording: true
 roles:
   - "Arranger"
 credit: "String arranger"

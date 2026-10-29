@@ -17,11 +17,10 @@ const projects = defineCollection({
       // unless dateLabel overrides it (e.g. "2023/24").
       date: z.string().regex(/^\d{4}(-\d{2}(-\d{2})?)?$/),
       dateLabel: z.string().optional(),
-      // Featured projects lead the work section, chosen by importance not date.
+      // Featured projects appear in the carousel, chosen by importance not date.
       featured: z.boolean().default(false),
-      // "page": its own page at /projects/<slug>. "expand": an expanding
-      // archive row with a simplified layout (it still gets a page).
-      display: z.enum(["page", "expand"]).default("page"),
+      // Recordings (albums, EPs, singles Jon worked on) also appear in the discography.
+      recording: z.boolean().default(false),
       roles: z.array(z.enum(ROLES)),
       // Jon's role in his own words, e.g. "String arranger, keyboards".
       credit: z.string(),

@@ -2,7 +2,7 @@
 title: "Welcome Party"
 date: "2021-07"
 featured: false
-display: "page"
+recording: true
 roles:
   - "Conductor"
 credit: "Conductor"

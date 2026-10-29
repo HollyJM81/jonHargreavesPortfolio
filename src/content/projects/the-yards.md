@@ -2,7 +2,7 @@
 title: "The Yards"
 date: "2005"
 featured: false
-display: "page"
+recording: true
 roles:
   - "Composer"
   - "Arranger"

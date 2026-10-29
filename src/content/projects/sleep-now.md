@@ -2,7 +2,6 @@
 title: "Sleep Now"
 date: "2022-03"
 featured: false
-display: "page"
 roles:
   - "Composer"
   - "Arranger"

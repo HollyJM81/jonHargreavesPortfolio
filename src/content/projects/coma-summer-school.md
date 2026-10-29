@@ -2,7 +2,6 @@
 title: "CoMA Summer School"
 date: "2025-08"
 featured: true
-display: "page"
 roles:
   - "Conductor"
 credit: "Conductor"

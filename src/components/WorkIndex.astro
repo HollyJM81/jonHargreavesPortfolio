@@ -1,302 +1,228 @@
 ---
 import ProjectCard from "./ProjectCard.astro"
 import Archive from "./Archive.astro"
-import { ROLES } from "../data/roles"
 import { pad, type Project } from "../lib/projects"
 
 interface Props {
   featured: Project[]
-  archive: Project[]
+  all: Project[]
 }
 
-const { featured, archive } = Astro.props
+const { featured, all } = Astro.props
 ---
 
 <section class="work" id="work" aria-labelledby="work-title">
-  <div class="heading">
-    <div>
-      <span class="label">(01) Selected work</span>
-      <h2 class="display" id="work-title">Recent projects</h2>
+  <div class="carousel" data-carousel>
+    <div class="intro">
+      <div>
+        <span class="label">(01) Selected work</span>
+        <h2 class="display" id="work-title">Featured projects</h2>
+      </div>
+      <!-- Hidden until the script runs; without JavaScript the track still scrolls. -->
+      <div class="controls" data-controls hidden>
+        <span class="label counter" aria-hidden="true">
+          <span data-current>01</span> / {pad(featured.length)}
+        </span>
+        <button type="button" data-prev aria-label="Previous project">←</button>
+        <button type="button" data-next aria-label="Next project">→</button>
+      </div>
     </div>
-    <p>Filter the work by role, or search by collaborator, keyword or idea.</p>
+
+    <ul class="track" data-track aria-label="Featured projects">
+      {featured.map((project, i) => <ProjectCard project={project} number={i + 1} />)}
+    </ul>
+
+    <div class="progress" aria-hidden="true"><span data-progress></span></div>
   </div>
 
-  <!-- Hidden until the script runs; without JavaScript every project is shown. -->
-  <div class="filter-bar" data-filter-bar hidden>
-    <div class="roles" role="group" aria-label="Filter projects by role">
-      <button type="button" class="label" data-role="" aria-pressed="true">All</button>
-      {
-        ROLES.map((role) => (
-          <button type="button" class="label" data-role={role} aria-pressed="false">
-            {role}
-          </button>
-        ))
-      }
-    </div>
-    <label class="search">
-      <span class="sr-only">Search projects</span>
-      <input type="search" class="label" placeholder="Search work" data-search />
-    </label>
-  </div>
-
-  <p class="results label" aria-live="polite">
-    <span>
-      Showing <span data-count>{pad(featured.length)}</span> / {pad(featured.length)}
-    </span>
-    <span data-role-label>All practices</span>
-  </p>
-
-  <ul class="grid" data-grid>
-    {featured.map((project, i) => <ProjectCard project={project} number={i + 1} />)}
-  </ul>
-
-  <div class="empty" data-empty hidden>
-    <p>No featured work found.</p>
-    <div>
-      <button type="button" class="label" data-clear>Clear search</button>
-      <a class="label" href="#archive">Browse the archive</a>
-    </div>
-  </div>
-
-  <Archive projects={archive} startAt={featured.length + 1} />
+  <Archive projects={all} />
 </section>
 
 <script>
-  const bar = document.querySelector<HTMLElement>("[data-filter-bar]")!
-  const buttons = [...bar.querySelectorAll<HTMLButtonElement>("[data-role]")]
-  const search = bar.querySelector<HTMLInputElement>("[data-search]")!
-  const cards = [...document.querySelectorAll<HTMLElement>("[data-grid] > li")]
-  const count = document.querySelector("[data-count]")!
-  const roleLabel = document.querySelector("[data-role-label]")!
-  const empty = document.querySelector<HTMLElement>("[data-empty]")!
+  const root = document.querySelector<HTMLElement>("[data-carousel]")!
+  const track = root.querySelector<HTMLElement>("[data-track]")!
+  const slides = [...track.children] as HTMLElement[]
+  const prev = root.querySelector<HTMLButtonElement>("[data-prev]")!
+  const next = root.querySelector<HTMLButtonElement>("[data-next]")!
+  const current = root.querySelector("[data-current]")!
+  const progress = root.querySelector<HTMLElement>("[data-progress]")!
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)")
 
-  // The URL holds the role lower-cased (?role=conductor); match it case-insensitively.
-  const requested = (new URLSearchParams(location.search).get("role") ?? "").toLowerCase()
-  let activeRole = buttons.find((b) => b.dataset.role!.toLowerCase() === requested)?.dataset.role ?? ""
+  // Slides snap to the track's left padding, so positions are measured from there.
+  const start = () => parseFloat(getComputedStyle(track).paddingLeft)
+  const maxScroll = () => track.scrollWidth - track.clientWidth
 
-  function apply() {
-    const term = search.value.trim().toLowerCase()
-    let visible = 0
-    for (const card of cards) {
-      const matchesRole = !activeRole || card.dataset.roles!.split("|").includes(activeRole)
-      const matchesTerm = !term || card.dataset.search!.includes(term)
-      card.hidden = !(matchesRole && matchesTerm)
-      if (!card.hidden) visible++
-    }
-    for (const b of buttons) b.setAttribute("aria-pressed", String(b.dataset.role === activeRole))
-    count.textContent = String(visible).padStart(2, "0")
-    roleLabel.textContent = activeRole || "All practices"
-    empty.hidden = visible > 0
-
-    const url = new URL(location.href)
-    if (activeRole) url.searchParams.set("role", activeRole.toLowerCase())
-    else url.searchParams.delete("role")
-    history.replaceState(null, "", url)
+  function index() {
+    if (track.scrollLeft >= maxScroll() - 2) return slides.length - 1
+    const left = track.scrollLeft + start()
+    let best = 0
+    slides.forEach((slide, i) => {
+      if (Math.abs(slide.offsetLeft - left) < Math.abs(slides[best].offsetLeft - left)) best = i
+    })
+    return best
   }
 
-  for (const b of buttons) {
-    b.addEventListener("click", () => {
-      activeRole = b.dataset.role!
-      apply()
+  function go(i: number) {
+    const slide = slides[Math.max(0, Math.min(slides.length - 1, i))]
+    track.scrollTo({
+      left: slide.offsetLeft - start(),
+      behavior: reduceMotion.matches ? "auto" : "smooth",
     })
   }
-  search.addEventListener("input", apply)
-  document.querySelector("[data-clear]")!.addEventListener("click", () => {
-    search.value = ""
-    activeRole = ""
-    apply()
-  })
 
-  bar.hidden = false
-  apply()
+  let frame = 0
+  function update() {
+    cancelAnimationFrame(frame)
+    frame = requestAnimationFrame(() => {
+      const i = index()
+      current.textContent = String(i + 1).padStart(2, "0")
+      prev.disabled = track.scrollLeft <= 2
+      next.disabled = track.scrollLeft >= maxScroll() - 2
+      const fraction = maxScroll() > 0 ? track.scrollLeft / maxScroll() : 1
+      const segment = 1 / slides.length
+      progress.style.transform = `scaleX(${segment + (1 - segment) * fraction})`
+    })
+  }
+
+  prev.addEventListener("click", () => go(index() - 1))
+  next.addEventListener("click", () => go(index() + 1))
+  track.addEventListener("scroll", update, { passive: true })
+  addEventListener("resize", update)
+
+  root.querySelector<HTMLElement>("[data-controls]")!.hidden = false
+  root.classList.add("is-enhanced")
+  update()
 </script>
 
 <style>
   .work {
-    padding: var(--section-space) var(--gutter) 0;
+    padding-top: clamp(64px, 11svh, var(--section-space));
   }
 
-  .heading {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
+  /* Sized so the whole carousel sits within one screen. */
+  .carousel {
+    --slide-h: clamp(220px, 50svh, 540px);
+  }
+
+  .intro {
+    display: flex;
     align-items: end;
-    gap: 60px;
-    margin-bottom: 80px;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: clamp(24px, 4svh, 44px);
+    padding-inline: var(--gutter);
   }
 
   h2 {
-    margin-top: 18px;
-    font-size: clamp(64px, 8vw, 116px);
+    margin-top: 14px;
+    font-size: clamp(48px, 6vw, 92px);
   }
 
-  .heading > p {
-    max-width: 420px;
-    margin: 0;
-    font-family: var(--serif);
-    font-size: 19px;
-    line-height: 1.5;
-  }
-
-  .filter-bar {
-    position: sticky;
-    z-index: 10;
-    top: 0;
+  .controls {
     display: flex;
-    justify-content: space-between;
-    gap: 24px;
-    border-top: 1px solid var(--ink);
-    border-bottom: 1px solid var(--ink);
-    background: var(--paper);
+    align-items: center;
+    gap: 10px;
   }
 
-  .filter-bar[hidden] {
+  .controls[hidden] {
     display: none;
   }
 
-  .roles {
-    display: flex;
-    flex-wrap: wrap;
-  }
-
-  .roles button {
-    position: relative;
-    padding: 18px 14px;
-    cursor: pointer;
-    border: 0;
-    background: transparent;
-    color: var(--muted);
-    transition: color var(--ease);
-  }
-
-  .roles button:first-child {
-    padding-left: 0;
-  }
-
-  .roles button::after {
-    position: absolute;
-    right: 14px;
-    bottom: -1px;
-    left: 14px;
-    height: 2px;
-    content: "";
-  }
-
-  .roles button:first-child::after {
-    left: 0;
-  }
-
-  .roles button:hover,
-  .roles button[aria-pressed="true"] {
-    color: var(--blue);
-  }
-
-  .roles button[aria-pressed="true"]::after {
-    background: var(--blue);
-  }
-
-  .search {
-    display: flex;
-    width: 230px;
-    align-items: center;
-    padding-left: 20px;
-    border-left: 1px solid var(--line);
-  }
-
-  .search input {
-    width: 100%;
-    border: 0;
-    background: transparent;
-  }
-
-  .search input::placeholder {
+  .counter {
+    margin-right: 10px;
     color: var(--muted);
   }
 
-  .results {
-    display: flex;
-    justify-content: space-between;
-    margin: 0;
-    padding: 20px 0 48px;
-    color: var(--muted);
+  .counter span {
+    color: var(--ink);
   }
 
-  .grid {
+  .controls button {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 86px 26px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
+    width: 48px;
+    height: 48px;
+    place-items: center;
+    cursor: pointer;
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+    background: transparent;
+    font-size: 18px;
+    transition:
+      background var(--ease),
+      color var(--ease),
+      opacity var(--ease);
   }
 
-  .empty {
+  .controls button:hover:not(:disabled) {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .controls button:disabled {
+    cursor: default;
+    opacity: 0.3;
+  }
+
+  .track {
+    position: relative;
     display: flex;
-    min-height: 340px;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    border-bottom: 1px solid var(--ink);
+    gap: 26px;
+    margin: 0;
+    padding: 0 var(--gutter) 20px;
+    overflow-x: auto;
+    list-style: none;
+    overscroll-behavior-x: contain;
+    scroll-padding-inline: var(--gutter);
+    scroll-snap-type: x mandatory;
   }
 
-  .empty[hidden] {
+  /* The progress line replaces the scrollbar once the controls work. */
+  .is-enhanced .track {
+    scrollbar-width: none;
+  }
+
+  .is-enhanced .track::-webkit-scrollbar {
     display: none;
   }
 
-  .empty p {
-    margin: 0 0 20px;
-    font-family: var(--serif);
-    font-size: 48px;
-    text-align: center;
+  .progress {
+    display: none;
+    height: 1px;
+    margin: 8px var(--gutter) 0;
+    background: var(--line);
   }
 
-  .empty div {
-    display: flex;
-    gap: 24px;
+  .is-enhanced .progress {
+    display: block;
   }
 
-  .empty button,
-  .empty a {
-    padding: 0;
-    cursor: pointer;
-    border: 0;
-    border-bottom: 1px solid;
-    background: transparent;
-  }
-
-  @media (max-width: 900px) {
-    .heading {
-      grid-template-columns: 1fr;
-    }
-
-    .filter-bar {
-      flex-direction: column;
-      align-items: start;
-      gap: 0;
-    }
-
-    .search {
-      width: 100%;
-      padding: 14px 0;
-      border-top: 1px solid var(--line);
-      border-left: 0;
-    }
+  .progress span {
+    display: block;
+    height: 2px;
+    margin-top: -0.5px;
+    background: var(--ink);
+    transform-origin: left;
+    transition: transform 120ms linear;
   }
 
   @media (max-width: 620px) {
-    .heading {
-      margin-bottom: 55px;
+    .carousel {
+      --slide-h: clamp(220px, 44svh, 110vw);
     }
 
-    .filter-bar {
-      position: relative;
+    .intro {
+      align-items: start;
+      flex-direction: column;
+      gap: 18px;
     }
 
-    .roles button {
-      padding: 13px 9px;
+    .track {
+      gap: 16px;
     }
 
-    .grid {
-      row-gap: 68px;
+    .controls button {
+      width: 42px;
+      height: 42px;
     }
   }
 </style>

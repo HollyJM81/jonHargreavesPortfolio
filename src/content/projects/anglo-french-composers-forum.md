@@ -2,7 +2,6 @@
 title: "Anglo-French Composers Forum"
 date: "2012-11"
 featured: false
-display: "page"
 roles: []
 credit: "Co-Artistic Director"
 summary: "New Music Weekend"

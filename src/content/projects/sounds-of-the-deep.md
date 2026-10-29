@@ -2,7 +2,6 @@
 title: "Sounds of the Deep"
 date: "2025-01"
 featured: true
-display: "page"
 roles:
   - "Composer"
 credit: "Composer"

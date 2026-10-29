@@ -2,7 +2,6 @@
 title: "Let Go"
 date: "2021-11"
 featured: false
-display: "page"
 roles:
   - "Arranger"
 credit: "Orchestral arranger"

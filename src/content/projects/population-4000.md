@@ -2,7 +2,7 @@
 title: "Population 4000"
 date: "2013"
 featured: false
-display: "page"
+recording: true
 roles:
   - "Composer"
   - "Arranger"

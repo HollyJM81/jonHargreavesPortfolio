@@ -1,67 +1,90 @@
 ---
 // Bio text matches the current live site (Webflow homepage).
+import { pad } from "../lib/projects"
+
+interface Props {
+  recordingCount: number
+}
+
+const { recordingCount } = Astro.props
 ---
 
 <section class="profile" id="about" aria-labelledby="profile-title">
-  <div>
-    <span class="label">(02) Profile</span>
-    <h2 class="display" id="profile-title">
-      Serious about music.<br />
-      <em>Relentless</em> in the pursuit of meaning.
-    </h2>
-  </div>
-  <div class="copy">
-    <p class="lead">
-      Jon works across musical genres as a composer, arranger and conductor, from his base in
-      Scotland.
-    </p>
-    <div class="columns">
-      <p>
-        His professional portfolio over the last 10 years encompasses artistic directorships;
-        conducting new music, as well as standard orchestral repertoire and opera;
-        composing/arranging for orchestras, singer-songwriters and other artists; and executive
-        production for recording projects.
-      </p>
-      <p>
-        He co-founded the Octandre Ensemble with the composer Christian Mason in 2011. He has
-        conducted and led the Ensemble in festival appearances in London and at the Huddersfield
-        Contemporary Music Festival, leading to appearances on BBC Radio 3, and CD releases on
-        Another Timbre and SN Variations. He was founding Co-Artistic Director of Glasgow's Nevis
-        Ensemble until 2022, conducting over 200 performances in settings ranging from schools and
-        prisons to museums, art galleries and concert halls, as well as on top of Ben Nevis and on
-        the remote isles of St Kilda. Since 2023, he conducts the Film Composers Lab at the Royal
-        Scottish National Orchestra (RSNO).
-      </p>
-      <p>
-        Jon has a long-term and deep-rooted interest in musical value and meaning. He has published
-        music analytic work, as well as collaborations in the social psychology of music, music
-        education and embodied music cognition. Jon teaches at the Royal Conservatoire of Scotland.
-      </p>
+  <!-- Its own grid, so the sticky heading stops before the discography link. -->
+  <div class="columns">
+    <div class="intro">
+      <span class="label">(02) Profile</span>
+      <h2 class="display" id="profile-title">
+        <em>Serious</em> about music.
+      </h2>
     </div>
-    <figure>
-      <blockquote>
-        “Denyer’s hour-long masterpiece … had a gripping flow that was sometimes thunderously
-        aggressive, … sometimes beguiling and often disturbing.”
-      </blockquote>
-      <figcaption class="label">
-        Richard Morrison, The Times —
-        <a href="/projects/the-fish-that-became-the-sun-world-premiere">
-          The Fish that Became the Sun
-        </a>
-      </figcaption>
-    </figure>
+    <div class="copy">
+      <p class="lead">
+        Jon works across musical genres as a composer, arranger and conductor, from his base in
+        Scotland.
+      </p>
+      <div class="bio">
+        <p>
+          His professional portfolio over the last 10 years encompasses artistic directorships;
+          conducting new music, as well as standard orchestral repertoire and opera;
+          composing/arranging for orchestras, singer-songwriters and other artists; and executive
+          production for recording projects.
+        </p>
+        <p>
+          He co-founded the Octandre Ensemble with the composer Christian Mason in 2011. He has
+          conducted and led the Ensemble in festival appearances in London and at the Huddersfield
+          Contemporary Music Festival, leading to appearances on BBC Radio 3, and CD releases on
+          Another Timbre and SN Variations. He was founding Co-Artistic Director of Glasgow's Nevis
+          Ensemble until 2022, conducting over 200 performances in settings ranging from schools and
+          prisons to museums, art galleries and concert halls, as well as on top of Ben Nevis and on
+          the remote isles of St Kilda. Since 2023, he conducts the Film Composers Lab at the Royal
+          Scottish National Orchestra (RSNO).
+        </p>
+        <p>
+          Jon has a long-term and deep-rooted interest in musical value and meaning. He has published
+          music analytic work, as well as collaborations in the social psychology of music, music
+          education and embodied music cognition. Jon teaches at the Royal Conservatoire of Scotland.
+        </p>
+      </div>
+      <figure>
+        <blockquote>
+          “Denyer’s hour-long masterpiece … had a gripping flow that was sometimes thunderously
+          aggressive, … sometimes beguiling and often disturbing.”
+        </blockquote>
+        <figcaption class="label">
+          Richard Morrison, The Times —
+          <a href="/projects/the-fish-that-became-the-sun-world-premiere">
+            The Fish that Became the Sun
+          </a>
+        </figcaption>
+      </figure>
+    </div>
   </div>
+  <a class="discography" href="/discography">
+    View the discography 
+    <span class="arrow" aria-hidden="true">↗</span>
+  </a>
 </section>
 
 <style>
   .profile {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 9vw;
     margin-top: 130px;
     padding: var(--section-space) var(--gutter) 130px;
     border-top: 1px solid var(--line);
     background: var(--paper-deep);
+  }
+
+  .columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9vw;
+  }
+
+  /* Keeps the heading alongside the bio as it scrolls. A portrait can go here later. */
+  .intro {
+    position: sticky;
+    top: 48px;
+    align-self: start;
   }
 
   h2 {
@@ -80,26 +103,29 @@
 
   .lead {
     max-width: 580px;
-    margin: 0 0 48px;
+    margin: 0 0 32px;
     font-family: var(--serif);
     font-size: clamp(30px, 3vw, 44px);
     line-height: 1.1;
   }
 
-  .columns {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
+  .bio {
+    max-width: var(--max-measure);
   }
 
-  .columns p {
-    margin: 0;
-    font-size: var(--text-small);
+  .bio p {
+    margin: 0 0 1.1em;
+    font-size: 16px;
     line-height: 1.7;
   }
 
+  .bio p:last-child {
+    margin-bottom: 0;
+  }
+
   figure {
-    margin: 70px 0 0;
+    max-width: var(--max-measure);
+    margin: 56px 0 0;
     padding: 28px 0 0;
     border-top: 1px solid var(--ink);
   }
@@ -119,10 +145,57 @@
     border-bottom: 1px solid currentColor;
   }
 
+  /* Same treatment as the contact link in the footer. */
+  .discography {
+    display: flex;
+    align-items: center;
+    margin-top: 96px;
+    gap: 20px;
+    padding: 27px 0;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    font-family: var(--serif);
+    font-size: clamp(24px, 4vw, 60px);
+    transition:
+      padding var(--ease),
+      color var(--ease);
+  }
+
+  .discography:hover {
+    padding-inline: 12px;
+    color: var(--blue);
+  }
+
+  .count {
+    align-self: start;
+    margin-top: 0.6em;
+    color: var(--muted);
+    font-family: var(--sans);
+  }
+
+  .arrow {
+    margin-left: auto;
+    font-family: var(--sans);
+    font-size: 24px;
+    transition: transform var(--ease);
+  }
+
+  .discography:hover .arrow {
+    transform: translateX(6px);
+  }
+
   @media (max-width: 900px) {
-    .profile {
+    .columns {
       grid-template-columns: 1fr;
       gap: 40px;
+    }
+
+    .discography {
+      margin-top: 64px;
+    }
+
+    .intro {
+      position: static;
     }
 
     .copy {
@@ -134,10 +207,6 @@
     .profile {
       margin-top: 85px;
       padding-bottom: var(--section-space);
-    }
-
-    .columns {
-      grid-template-columns: 1fr;
     }
   }
 </style>

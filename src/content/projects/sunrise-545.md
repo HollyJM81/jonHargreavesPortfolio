@@ -2,7 +2,7 @@
 title: "Sunrise 545"
 date: "2024-08"
 featured: false
-display: "page"
+recording: true
 roles:
   - "Composer"
   - "Producer"

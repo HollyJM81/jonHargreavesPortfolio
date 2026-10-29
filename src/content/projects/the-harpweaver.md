@@ -2,7 +2,6 @@
 title: "The Harpweaver"
 date: "2024-01-26"
 featured: false
-display: "page"
 roles:
   - "Arranger"
 credit: "Arranger"

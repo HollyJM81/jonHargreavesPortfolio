@@ -2,7 +2,7 @@
 title: "The Rookery"
 date: "2011"
 featured: false
-display: "page"
+recording: true
 roles:
   - "Arranger"
 credit: "String arranger, keyboards"

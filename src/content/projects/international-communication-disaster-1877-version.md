@@ -2,7 +2,7 @@
 title: "International Communication Disaster 1877' version: May 2020"
 date: "2021-06"
 featured: false
-display: "page"
+recording: true
 roles: []
 credit: "Performer"
 summary: "Real-time intercontinental improvisation"

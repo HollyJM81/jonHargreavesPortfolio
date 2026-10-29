@@ -2,7 +2,6 @@
 title: "Tomnasimk: Carrying the Burden Together"
 date: "2024-05"
 featured: true
-display: "page"
 roles:
   - "Composer"
 credit: "Composer"

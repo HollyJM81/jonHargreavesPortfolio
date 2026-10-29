@@ -2,7 +2,6 @@
 title: "Curiouser"
 date: "2015"
 featured: false
-display: "page"
 roles: []
 credit: "Co-Artistic Director"
 summary: "Composer-curator collaboration project"

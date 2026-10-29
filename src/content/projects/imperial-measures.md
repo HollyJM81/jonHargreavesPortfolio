@@ -2,7 +2,7 @@
 title: "Imperial Measures"
 date: "2009"
 featured: false
-display: "page"
+recording: true
 roles:
   - "Composer"
   - "Arranger"

@@ -2,7 +2,6 @@
 title: "Rolf Hind Composer Portrait"
 date: "2018-06"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Co-Artistic Director, Conductor, Fundraiser"

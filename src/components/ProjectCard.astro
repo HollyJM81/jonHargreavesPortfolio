@@ -8,48 +8,38 @@ interface Props {
 }
 
 const { project, number } = Astro.props
-const { title, credit, summary, roles, image, imageAlt } = project.data
-const searchText = [title, credit, summary, roles.join(" "), project.body]
-  .join(" ")
-  .toLowerCase()
+const { title, credit, summary, image, imageAlt } = project.data
 ---
 
-<li class="card" data-roles={roles.join("|")} data-search={searchText}>
+<li class="card">
   <div class="image">
     <Picture
       src={image}
       alt={imageAlt}
-      widths={[400, 700, 1000]}
-      sizes="(max-width: 620px) 100vw, (max-width: 900px) 50vw, 33vw"
+      widths={[500, 800, 1100]}
+      sizes="(max-width: 620px) 85vw, 650px"
       formats={["avif"]}
       fallbackFormat="webp"
     />
-    <span aria-hidden="true">{pad(number)}</span>
   </div>
   <div class="meta label">
-    <span>{displayDate(project)}</span>
     <span>{credit}</span>
   </div>
   <h3><a href={projectUrl(project)}>{title}</a></h3>
   {summary && <p>{summary}</p>}
-  {
-    roles.length > 0 && (
-      <ul class="roles label" aria-label="Roles">
-        {roles.map((role) => <li>{role}</li>)}
-      </ul>
-    )
-  }
 </li>
 
 <style>
   .card {
     position: relative;
-    grid-column: span 4;
+    flex: 0 0 auto;
+    width: min(calc(var(--slide-h) * 1.3), calc(100vw - var(--gutter) * 2 - 40px));
+    scroll-snap-align: start;
+    margin: 60px;
   }
 
   .image {
-    position: relative;
-    aspect-ratio: 1;
+    height: var(--slide-h);
     overflow: hidden;
     background: var(--placeholder);
   }
@@ -70,35 +60,32 @@ const searchText = [title, credit, summary, roles.join(" "), project.body]
     transform: scale(1.015);
   }
 
-  .image span {
-    position: absolute;
-    top: 13px;
-    left: 15px;
-    color: white;
-    font-family: var(--serif);
-    font-size: 15px;
-    text-shadow: 0 1px 8px rgb(0 0 0 / 0.3);
-  }
-
   .meta {
     display: flex;
     justify-content: space-between;
     gap: 20px;
-    padding: 13px 0 11px;
+    padding: 12px 0 10px;
     border-bottom: 1px solid var(--line);
     color: var(--muted);
   }
 
+  .meta span:first-child {
+    flex: none;
+  }
+
   .meta span:last-child {
+    overflow: hidden;
     text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   h3 {
-    margin: 20px 0 10px;
+    margin: 16px 0 6px;
     font-family: var(--serif);
-    font-size: clamp(32px, 3vw, 48px);
+    font-size: clamp(26px, 2.4vw, 38px);
     font-weight: 400;
-    line-height: 1;
+    line-height: 1.05;
     letter-spacing: -0.03em;
   }
 
@@ -109,35 +96,17 @@ const searchText = [title, credit, summary, roles.join(" "), project.body]
     content: "";
   }
 
+  .card:hover h3 a {
+    color: var(--blue);
+  }
+
   p {
+    display: -webkit-box;
     margin: 0;
+    overflow: hidden;
     color: var(--ink-soft);
     font-size: var(--text-small);
-  }
-
-  .roles {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    margin: 18px 0 0;
-    padding: 0;
-    color: var(--muted);
-    list-style: none;
-  }
-
-  @media (max-width: 900px) {
-    .card {
-      grid-column: span 6;
-    }
-  }
-
-  @media (max-width: 620px) {
-    .card {
-      grid-column: 1 / -1;
-    }
-
-    h3 {
-      font-size: 39px;
-    }
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
 </style>

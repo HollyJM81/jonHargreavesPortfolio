@@ -3,7 +3,6 @@ title: "Nevis Ensemble: Pandemic activity"
 date: "2020"
 dateLabel: "2020–21"
 featured: false
-display: "page"
 roles: []
 credit: "Co-Artistic Director, advisor"
 summary: "Online Music Projects"

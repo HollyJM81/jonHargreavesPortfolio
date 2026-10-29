@@ -2,7 +2,6 @@
 title: "Beeswing"
 date: "2024-07"
 featured: false
-display: "page"
 roles:
   - "Arranger"
 credit: "Arranger"

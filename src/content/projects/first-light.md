@@ -2,7 +2,7 @@
 title: "First Light"
 date: "2022"
 featured: false
-display: "page"
+recording: true
 roles:
   - "Composer"
   - "Arranger"

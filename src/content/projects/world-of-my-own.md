@@ -2,7 +2,7 @@
 title: "World of My Own"
 date: "2024-03"
 featured: true
-display: "page"
+recording: true
 roles:
   - "Composer"
   - "Arranger"

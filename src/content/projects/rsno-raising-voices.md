@@ -2,7 +2,6 @@
 title: "RSNO: Raising Voices"
 date: "2024-06"
 featured: true
-display: "page"
 roles:
   - "Conductor"
   - "Arranger"

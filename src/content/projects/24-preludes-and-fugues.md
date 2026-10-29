@@ -2,7 +2,7 @@
 title: "Matt Dibble: 24 Preludes and Fugues"
 date: "2024-06"
 featured: false
-display: "page"
+recording: true
 roles:
   - "Producer"
 credit: "Executive Producer (CD release), Writer (sleeve notes), Co-Producer (film), Fundraiser"

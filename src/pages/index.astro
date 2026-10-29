@@ -6,7 +6,7 @@ import Profile from "../components/Profile.astro"
 import { getProjects } from "../lib/projects"
 import { site } from "../data/site"
 
-const { featured, archive } = await getProjects()
+const { all, featured, recordings } = await getProjects()
 
 const person = {
   "@context": "https://schema.org",
@@ -22,6 +22,6 @@ const person = {
 
 <Base header="overlay" jsonLd={person}>
   <Hero />
-  <WorkIndex featured={featured} archive={archive} />
-  <Profile />
+  <WorkIndex featured={featured} all={all} />
+  <Profile recordingCount={recordings.length} />
 </Base>

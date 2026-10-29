@@ -6,6 +6,8 @@
 
 html {
   scroll-behavior: smooth;
+  /* Lets <details> animate to height: auto (see Archive.astro). */
+  interpolate-size: allow-keywords;
 }
 
 body {

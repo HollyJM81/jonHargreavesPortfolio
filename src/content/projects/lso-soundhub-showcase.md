@@ -2,7 +2,6 @@
 title: "LSO Soundhub Showcase"
 date: "2017-02"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Conductor"

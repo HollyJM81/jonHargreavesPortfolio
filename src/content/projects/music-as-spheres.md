@@ -2,7 +2,6 @@
 title: "Music as Spheres"
 date: "2011-03"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Conductor"

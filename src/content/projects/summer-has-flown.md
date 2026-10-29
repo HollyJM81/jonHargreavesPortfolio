@@ -2,7 +2,6 @@
 title: "The Summer has Flown"
 date: "2022-09"
 featured: false
-display: "page"
 roles:
   - "Arranger"
 credit: "arranger"

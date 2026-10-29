@@ -2,7 +2,6 @@
 title: "Each One Cancels The Last (Hector)"
 date: "2022-01"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Conductor"

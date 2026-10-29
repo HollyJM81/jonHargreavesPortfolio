@@ -2,7 +2,6 @@
 title: "Lacunas Music Society"
 date: "2024-11"
 featured: false
-display: "page"
 roles: []
 credit: "Keyboards"
 summary: "Keyboards for the Lacunas Music Society"

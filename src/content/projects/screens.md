@@ -2,7 +2,7 @@
 title: "Screens"
 date: "2024-03"
 featured: true
-display: "page"
+recording: true
 roles:
   - "Conductor"
   - "Producer"

@@ -2,7 +2,6 @@
 title: "5 Views of the Path"
 date: "2022-06"
 featured: false
-display: "page"
 roles: []
 credit: "Organiser"
 summary: "WP of Octandre Ensemble commission"

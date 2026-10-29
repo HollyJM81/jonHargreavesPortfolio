@@ -2,7 +2,6 @@
 title: "Sinan Savaskan Composer Portrait"
 date: "2014-10"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Conductor"

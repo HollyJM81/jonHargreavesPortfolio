@@ -2,7 +2,7 @@
 title: "Clouds behind the Moon"
 date: "2022-11"
 featured: false
-display: "page"
+recording: true
 roles:
   - "Arranger"
 credit: "String arranger"

@@ -2,7 +2,6 @@
 title: "Friday Afternoons"
 date: "2025-03"
 featured: true
-display: "page"
 roles:
   - "Composer"
 credit: "Composer"

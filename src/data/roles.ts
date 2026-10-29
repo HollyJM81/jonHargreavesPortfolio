@@ -11,3 +11,6 @@ export const ROLES = [
 ] as const
 
 export type Role = (typeof ROLES)[number]
+
+// The roles offered as filter buttons in the archive.
+export const FILTER_ROLES: Role[] = ["Conductor", "Composer", "Arranger", "Producer"]

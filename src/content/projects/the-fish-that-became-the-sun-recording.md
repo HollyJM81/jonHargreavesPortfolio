@@ -2,7 +2,7 @@
 title: "The Fish that Became the Sun Recording"
 date: "2018-04"
 featured: false
-display: "page"
+recording: true
 roles:
   - "Conductor"
 credit: "Conductor"

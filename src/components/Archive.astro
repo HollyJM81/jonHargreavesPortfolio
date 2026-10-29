@@ -1,152 +1,318 @@
 ---
+import { Picture } from "astro:assets"
 import { render } from "astro:content"
+import { FILTER_ROLES } from "../data/roles"
 import { displayDate, pad, projectUrl, type Project } from "../lib/projects"
 
 interface Props {
   projects: Project[]
-  startAt: number
 }
 
-const { projects, startAt } = Astro.props
+const { projects } = Astro.props
 
-// Render bodies up front for rows using the simplified expanding layout.
 const rows = await Promise.all(
-  projects.map(async (project, i) => ({
-    project,
-    number: startAt + i,
-    Content: project.data.display === "expand" ? (await render(project)).Content : null,
-  })),
+  projects.map(async (project) => ({ project, Content: (await render(project)).Content })),
 )
+const total = pad(projects.length)
 ---
 
-<details class="archive" id="archive">
-  <summary>
-    <span class="closed-text">View the archive</span>
-    <span class="open-text">Close the archive</span>
-    <span class="count label">{projects.length} projects</span>
-    <span class="icon" aria-hidden="true"></span>
-  </summary>
+<div class="archive" id="archive">
+  <div class="heading">
+    <div>
+      <span class="label">Archive</span>
+      <h2 class="display" id="archive-title">All projects</h2>
+    </div>
+    <p>Filter the work by role, or search by collaborator, keyword or idea.</p>
+  </div>
 
-  <ol>
-    {
-      rows.map(({ project, number, Content }) =>
-        Content ? (
-          <li>
-            <details class="expand">
-              <summary class="row">
-                <span class="label">{pad(number)}</span>
-                <strong>{project.data.title}</strong>
-                <span class="label credit">{project.data.credit}</span>
-                <span class="label">{displayDate(project)}</span>
-              </summary>
-              <div class="expand-body prose">
-                {project.data.summary && <p class="summary">{project.data.summary}</p>}
-                <Content />
-                <a class="label more" href={projectUrl(project)}>
-                  Full project page →
-                </a>
-              </div>
-            </details>
-          </li>
-        ) : (
-          <li>
-            <a class="row" href={projectUrl(project)}>
-              <span class="label">{pad(number)}</span>
-              <strong>{project.data.title}</strong>
-              <span class="label credit">{project.data.credit}</span>
-              <span class="label">{displayDate(project)}</span>
-            </a>
-          </li>
-        ),
-      )
-    }
-  </ol>
-</details>
+  <div class="panel">
+    <!-- Hidden until the script runs; without JavaScript every project is shown. -->
+    <div class="filter-bar" data-filter-bar hidden>
+      <div class="roles" role="group" aria-label="Filter projects by role">
+        <button type="button" class="label" data-role="" aria-pressed="true">All</button>
+        {
+          FILTER_ROLES.map((role) => (
+            <button type="button" class="label" data-role={role} aria-pressed="false">
+              {role}
+            </button>
+          ))
+        }
+      </div>
+      <label class="search">
+        <span class="sr-only">Search projects</span>
+        <input type="search" class="label" placeholder="Search work" data-search />
+      </label>
+    </div>
+
+    <p class="results label" aria-live="polite">
+      <span>Showing <span data-count>{total}</span> / {total}</span>
+      <span data-role-label>All practices</span>
+    </p>
+
+    <ol class="list" data-list aria-labelledby="archive-title">
+      {
+        rows.map(({ project, Content }, i) => {
+          const { title, credit, summary, roles, image, imageAlt, collaborators } = project.data
+          return (
+            <li data-roles={roles.join("|")}>
+              <details>
+                <summary class="row">
+                  <span class="label">{pad(i + 1)}</span>
+                  <strong>{title}</strong>
+                  <span class="label credit">{credit}</span>
+                  <span class="label">{displayDate(project)}</span>
+                  <span class="icon" aria-hidden="true" />
+                </summary>
+                <div class="body">
+                  <div class="image">
+                    <Picture
+                      src={image}
+                      alt={imageAlt}
+                      widths={[400, 700]}
+                      sizes="(max-width: 620px) 100vw, 340px"
+                      formats={["avif"]}
+                      fallbackFormat="webp"
+                    />
+                  </div>
+                  <div class="text">
+                    {summary && <p class="summary">{summary}</p>}
+                    <div class="prose">
+                      <Content />
+                    </div>
+                    <dl class="facts">
+                      <div>
+                        <dt class="label">Role</dt>
+                        <dd>{credit}</dd>
+                      </div>
+                      {collaborators && (
+                        <div>
+                          <dt class="label">With</dt>
+                          <dd>{collaborators.map((c) => c.name).join(", ")}</dd>
+                        </div>
+                      )}
+                    </dl>
+                    <a class="label more" href={projectUrl(project)}>
+                      Full project page →
+                    </a>
+                  </div>
+                </div>
+              </details>
+            </li>
+          )
+        })
+      }
+    </ol>
+
+    <div class="empty" data-empty hidden>
+      <p>No projects found.</p>
+      <button type="button" class="label" data-clear>Clear filters</button>
+    </div>
+  </div>
+</div>
 
 <script>
-  // Open the archive when something links to it (e.g. the empty-state link).
-  const archive = document.querySelector<HTMLDetailsElement>("#archive")!
-  const openIfTargeted = () => {
-    if (location.hash === "#archive") archive.open = true
+  const bar = document.querySelector<HTMLElement>("[data-filter-bar]")!
+  const buttons = [...bar.querySelectorAll<HTMLButtonElement>("[data-role]")]
+  const search = bar.querySelector<HTMLInputElement>("[data-search]")!
+  const rows = [...document.querySelectorAll<HTMLElement>("[data-list] > li")]
+  const count = document.querySelector("[data-count]")!
+  const roleLabel = document.querySelector("[data-role-label]")!
+  const empty = document.querySelector<HTMLElement>("[data-empty]")!
+
+  // Search the rendered text of each row, including the collapsed description.
+  const text = new Map(rows.map((row) => [row, row.textContent!.toLowerCase()]))
+
+  // The URL holds the role lower-cased (?role=conductor); match it case-insensitively.
+  const requested = (new URLSearchParams(location.search).get("role") ?? "").toLowerCase()
+  let activeRole = buttons.find((b) => b.dataset.role!.toLowerCase() === requested)?.dataset.role ?? ""
+
+  function apply() {
+    const term = search.value.trim().toLowerCase()
+    let visible = 0
+    for (const row of rows) {
+      const matchesRole = !activeRole || row.dataset.roles!.split("|").includes(activeRole)
+      const matchesTerm = !term || text.get(row)!.includes(term)
+      row.hidden = !(matchesRole && matchesTerm)
+      if (!row.hidden) visible++
+    }
+    for (const b of buttons) b.setAttribute("aria-pressed", String(b.dataset.role === activeRole))
+    count.textContent = String(visible).padStart(2, "0")
+    roleLabel.textContent = activeRole || "All practices"
+    empty.hidden = visible > 0
+
+    const url = new URL(location.href)
+    if (activeRole) url.searchParams.set("role", activeRole.toLowerCase())
+    else url.searchParams.delete("role")
+    history.replaceState(null, "", url)
   }
-  addEventListener("hashchange", openIfTargeted)
-  openIfTargeted()
+
+  for (const b of buttons) {
+    b.addEventListener("click", () => {
+      activeRole = b.dataset.role!
+      apply()
+    })
+  }
+  search.addEventListener("input", apply)
+  document.querySelector("[data-clear]")!.addEventListener("click", () => {
+    search.value = ""
+    activeRole = ""
+    apply()
+  })
+
+  bar.hidden = false
+  apply()
 </script>
 
 <style>
   .archive {
-    margin-top: var(--section-space);
+    padding: var(--section-space) var(--gutter) 0;
+    scroll-margin-top: -1px;
   }
 
-  .archive > summary {
+  .heading {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    align-items: end;
+    gap: 60px;
+    margin-bottom: 56px;
+  }
+
+  h2 {
+    margin-top: 14px;
+    font-size: clamp(48px, 6vw, 92px);
+  }
+
+  .heading > p {
+    max-width: 420px;
+    margin: 0;
+    font-family: var(--serif);
+    font-size: 19px;
+    line-height: 1.5;
+  }
+
+  /* The list scrolls inside a box no taller than the window. */
+  .panel {
     display: flex;
-    align-items: center;
+    max-height: calc(100svh - 32px);
+    flex-direction: column;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .filter-bar {
+    display: flex;
+    flex: none;
+    justify-content: space-between;
     gap: 24px;
-    padding: 26px 0;
-    cursor: pointer;
     border-top: 1px solid var(--ink);
     border-bottom: 1px solid var(--ink);
-    font-family: var(--serif);
-    font-size: clamp(34px, 4vw, 54px);
-    list-style: none;
+    background: var(--paper);
   }
 
-  summary::-webkit-details-marker {
+  .filter-bar[hidden] {
     display: none;
   }
 
-  .count {
-    margin-left: auto;
+  .roles {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .roles button {
+    position: relative;
+    padding: 18px 14px;
+    cursor: pointer;
+    border: 0;
+    background: transparent;
     color: var(--muted);
-    font-family: var(--sans);
+    transition: color var(--ease);
   }
 
-  .icon::before {
-    font-family: var(--sans);
-    font-size: 28px;
-    font-weight: 300;
-    content: "+";
+  .roles button:first-child {
+    padding-left: 0;
   }
 
-  .archive[open] > summary .icon::before {
-    content: "−";
+  .roles button::after {
+    position: absolute;
+    right: 14px;
+    bottom: -1px;
+    left: 14px;
+    height: 2px;
+    content: "";
   }
 
-  .open-text,
-  .archive[open] > summary .closed-text {
-    display: none;
+  .roles button:first-child::after {
+    left: 0;
   }
 
-  .archive[open] > summary .open-text {
-    display: inline;
+  .roles button:hover,
+  .roles button[aria-pressed="true"] {
+    color: var(--blue);
   }
 
-  .archive[open] ol {
-    animation: reveal 280ms ease both;
+  .roles button[aria-pressed="true"]::after {
+    background: var(--blue);
   }
 
-  @keyframes reveal {
-    from {
-      opacity: 0;
-      transform: translateY(-8px);
-    }
+  .search {
+    display: flex;
+    width: 230px;
+    align-items: center;
+    padding-left: 20px;
+    border-left: 1px solid var(--line);
   }
 
-  ol {
+  .search input {
+    width: 100%;
+    border: 0;
+    background: transparent;
+  }
+
+  .search input::placeholder {
+    color: var(--muted);
+  }
+
+  .results {
+    display: flex;
+    flex: none;
+    justify-content: space-between;
+    margin: 0;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--ink);
+    color: var(--muted);
+  }
+
+  .list {
+    min-height: 0;
     margin: 0;
     padding: 0;
+    overflow-y: auto;
     list-style: none;
+    scrollbar-color: var(--line) transparent;
+    scrollbar-width: thin;
+  }
+
+  .list li {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .list li:last-child {
+    border-bottom: 0;
   }
 
   .row {
     display: grid;
-    grid-template-columns: 60px 1fr minmax(150px, 0.6fr) 70px;
+    grid-template-columns: 60px 1fr minmax(150px, 0.6fr) 70px 24px;
     gap: 20px;
     align-items: baseline;
     padding: 18px 0;
-    border-bottom: 1px solid var(--line);
+    cursor: pointer;
     color: var(--muted);
+    list-style: none;
     transition: color var(--ease);
+  }
+
+  .row::-webkit-details-marker {
+    display: none;
   }
 
   .row strong {
@@ -154,45 +320,186 @@ const rows = await Promise.all(
     font-family: var(--serif);
     font-size: 20px;
     font-weight: 400;
+    line-height: 1.25;
+    transition: color var(--ease);
   }
 
-  a.row:hover strong,
-  summary.row:hover strong {
+  .row:hover strong,
+  details[open] .row strong {
     color: var(--blue);
   }
 
-  summary.row {
-    cursor: pointer;
-    list-style: none;
+  .icon {
+    justify-self: end;
+    color: var(--ink);
   }
 
-  .expand-body {
-    padding: 24px 0 32px 80px;
-    border-bottom: 1px solid var(--line);
+  .icon::before {
+    font-size: 22px;
+    font-weight: 300;
+    line-height: 1;
+    content: "+";
+  }
+
+  details[open] .icon::before {
+    content: "−";
+  }
+
+  /* Animate opening where the browser supports it; elsewhere it opens instantly. */
+  details::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 320ms ease,
+      content-visibility 320ms allow-discrete;
+  }
+
+  details[open]::details-content {
+    block-size: auto;
+  }
+
+  .body {
+    display: grid;
+    grid-template-columns: 60px 340px minmax(0, 1fr);
+    gap: 20px;
+    padding: 8px 0 40px;
+  }
+
+  .image {
+    grid-column: 2;
+    align-self: start;
+    background: var(--placeholder);
+  }
+
+  .image :global(img) {
+    width: 100%;
+    height: auto;
+  }
+
+  .text {
+    padding-left: 20px;
   }
 
   .summary {
+    margin: 0 0 16px;
     font-family: var(--serif);
-    font-size: 20px;
+    font-size: 22px;
+    line-height: 1.3;
+  }
+
+  .prose :global(p:first-child) {
+    margin-top: 0;
+  }
+
+  .facts {
+    display: grid;
+    gap: 10px;
+    max-width: var(--max-measure);
+    margin: 24px 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    font-size: var(--text-small);
+  }
+
+  .facts div {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 12px;
+  }
+
+  .facts dt {
+    padding-top: 2px;
+    color: var(--muted);
+  }
+
+  .facts dd {
+    margin: 0;
   }
 
   .more {
     display: inline-block;
-    margin-top: 8px;
     border-bottom: 1px solid currentColor;
   }
 
-  @media (max-width: 620px) {
-    .archive {
-      margin-top: 50px;
+  .more:hover {
+    color: var(--blue);
+  }
+
+  .empty {
+    display: flex;
+    min-height: 300px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .empty[hidden] {
+    display: none;
+  }
+
+  .empty p {
+    margin: 0 0 20px;
+    font-family: var(--serif);
+    font-size: 48px;
+    text-align: center;
+  }
+
+  .empty button {
+    padding: 0;
+    cursor: pointer;
+    border: 0;
+    border-bottom: 1px solid;
+    background: transparent;
+  }
+
+  @media (max-width: 900px) {
+    .heading {
+      grid-template-columns: 1fr;
+      gap: 24px;
     }
 
-    .count {
-      display: none;
+    .filter-bar {
+      flex-direction: column;
+      align-items: start;
+      gap: 0;
+    }
+
+    .search {
+      width: 100%;
+      padding: 14px 0;
+      border-top: 1px solid var(--line);
+      border-left: 0;
+    }
+
+    .body {
+      grid-template-columns: 60px 220px minmax(0, 1fr);
+    }
+  }
+
+  @media (max-width: 620px) {
+    .heading {
+      margin-bottom: 40px;
+    }
+
+    /* One swipeable row instead of a ragged wrap. */
+    .roles {
+      width: calc(100% + var(--gutter));
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .roles button {
+      flex: none;
+      padding: 15px 9px;
+    }
+
+    .empty p {
+      font-size: 34px;
     }
 
     .row {
-      grid-template-columns: 35px 1fr auto;
+      grid-template-columns: 30px 1fr auto 18px;
       gap: 10px;
     }
 
@@ -200,8 +507,17 @@ const rows = await Promise.all(
       display: none;
     }
 
-    .expand-body {
-      padding-left: 45px;
+    .body {
+      display: block;
+      padding: 0 0 32px 40px;
+    }
+
+    .image {
+      margin-bottom: 20px;
+    }
+
+    .text {
+      padding-left: 0;
     }
   }
 </style>

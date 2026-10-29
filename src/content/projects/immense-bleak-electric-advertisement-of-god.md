@@ -2,7 +2,6 @@
 title: "Immense Bleak Electric Advertisement of God"
 date: "2024-09"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Conductor, Artistic planning"

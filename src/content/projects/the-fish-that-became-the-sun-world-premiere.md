@@ -2,7 +2,6 @@
 title: "The Fish that became the Sun, World premiere"
 date: "2019-11"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Musical Director and Conductor"

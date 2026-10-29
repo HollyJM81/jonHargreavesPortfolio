@@ -2,7 +2,6 @@
 title: "Taxi Driver"
 date: "2016"
 featured: false
-display: "page"
 roles: []
 credit: "Editor (score and parts production)"
 summary: "Live film score production"

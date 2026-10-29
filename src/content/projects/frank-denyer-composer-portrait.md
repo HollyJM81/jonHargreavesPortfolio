@@ -2,7 +2,6 @@
 title: "Frank Denyer Composer Portrait"
 date: "2018-05"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Co-Artistic Director, Conductor, Fundraiser"

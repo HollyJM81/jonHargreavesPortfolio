@@ -2,7 +2,6 @@
 title: "Principal Sound: Layers of Love"
 date: "2016-04"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Conductor"

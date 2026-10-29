@@ -2,7 +2,6 @@
 title: "Nevis Ensemble: Outer Hebrides Tour"
 date: "2019"
 featured: false
-display: "page"
 roles:
   - "Conductor"
 credit: "Co-Artistic Director"

@@ -2,7 +2,7 @@
 title: "Everything is in Order"
 date: "2014"
 featured: false
-display: "page"
+recording: true
 roles:
   - "Arranger"
 credit: "String arranger"
